@@ -22,52 +22,12 @@ export class ImportAtdService {
   exportedAtdstring: string;
   exportedAtd: ActivityTypeDefinition;
 
-  constructor(private appService: AppService) {
-    //private addonService: AddonService) {
-    // const accessToken = this.addonService.getUserToken();
-    // this.parsedToken = jwt(accessToken);
-    //this.papiBaseURL = this.parsedToken["pepperi.baseurl"];
-    //this.papiClient = PapiClient;
-  }
+  constructor(private appService: AppService) {}
 
-  //   openDialog(
-  //     title = "Modal Test",
-  //     content,
-  //     buttons,
-  //     input,
-  //     callbackFunc,
-  //     panelClass = "pepperi-modalbox"
-  //   ): void {
-  //     const self = this;
-  //     const dialogConfig = new MatDialogConfig();
-  //     // const data = new DialogModel(
-  //     //   title,
-  //     //   content,
-  //     //   DialogDataType.Component,
-  //     //   [],
-  //     //   input
-  //     // );
-  //     // dialogConfig.disableClose = true;
-  //     // dialogConfig.autoFocus = false;
-  //     // dialogConfig.data = data;
-  //     // dialogConfig.panelClass = "pepperi-standalone";
-  //     // const dialogRef = this.dialog.open(content, dialogConfig);
-  //     // dialogRef.afterClosed().subscribe((res) => {
-  //     //   callbackFunc(res);
-  //     // });
-  //   }
-
-  //   openTextDialog(title, content, buttons) {
-  //     const data = new DialogData(title, content, DialogDataType.Text, buttons);
-  //     this.userService.openDialog(data);
-  //   }
-  uploadFile(file) {
-    let formData: FormData = new FormData();
-    formData.append("file", file, file.name);
-    console.log(`formData:${formData}`);
-    this.file = file;
-
-    //this.http.post(url, formData, request_options)
+  callToAddonApi(methodName: string, params: any): Promise<any> {
+    return this.appService
+      .getAddonServerAPI(this.pluginUUID, "api", methodName, { params: params })
+      .toPromise();
   }
 
   getTypeOfSubType(subtypeid: string) {
@@ -124,18 +84,7 @@ export class ImportAtdService {
     }
   }
 
-  getPapiClient() {
-    return this.papiClient;
-  }
   openDialog(title: string, content: string) {
     this.appService.openDialog(title, content);
-  }
-  get papiClient(): PapiClient {
-    return new PapiClient({
-      baseURL: this.papiBaseURL,
-      token: this.addonService.getUserToken(),
-      addonUUID: this.pluginUUID,
-      suppressLogging: true,
-    });
   }
 }

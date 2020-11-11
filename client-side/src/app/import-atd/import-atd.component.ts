@@ -13,7 +13,34 @@ import { ReferenceType } from "./../../../../models/referenceType";
 import { Webhook } from "./../../../../models/Webhook";
 import { ResolutionOption } from "./../../../../models/resolutionOption.enum";
 import { pairs } from "rxjs";
-import { KeyValuePair } from "@pepperi-addons/ngx-lib";
+import {
+  AddonService,
+  CustomizationService,
+  DataConvertorService,
+  FIELD_TYPE,
+  HttpService,
+  KeyValuePair,
+  ObjectSingleData,
+  PepFieldData,
+  PepRowData,
+  UtilitiesService,
+} from "@pepperi-addons/ngx-lib";
+import { FakeData } from "../pepperi-list-example/fake-data";
+import {
+  PepListComponent,
+  PepListViewType,
+} from "@pepperi-addons/ngx-lib/list";
+import {
+  PepGroupButton,
+  PepGroupButtonsViewType,
+} from "@pepperi-addons/ngx-lib/group-buttons";
+import { PepColorType } from "@pepperi-addons/ngx-lib/color";
+export enum AddonType {
+  System = 1,
+  Public = 2,
+  Distributor = 3,
+  Dev = 4,
+}
 @Component({
   selector: "app-import-atd",
   templateUrl: "./import-atd.component.html",
@@ -30,7 +57,17 @@ export class ImportAtdComponent implements OnInit {
   selectedFile: File;
   showConflictResolution: boolean = false;
   showWebhooksResolution: boolean = false;
+  title = "pepperi web app test";
+  color = "hsl(100, 100%, 25%)";
+  value = "";
+  richTextValue =
+    '<iframe width="500px" src="https://rerroevi.sirv.com/Website/Fashion/Pinkpurse/Pinkpurse.spin"/>';
 
+  groupButtons: Array<PepGroupButton>;
+  GROUP_BUTTONS_VIEW_TYPE: PepGroupButtonsViewType = "regular";
+  viewType: PepListViewType = "table";
+  //visibilty hidden
+  colorType: PepColorType = "any";
   conflictsList: Conflict[] = [];
   webhooks: Webhook[] = [];
   typeString = ``;
@@ -38,21 +75,16 @@ export class ImportAtdComponent implements OnInit {
 
   referenceMap: References;
 
-  //   pepperiListOutputs: any = {
-  //     notifyListChanged: (event) => {},
-  //     notifySortingChanged: (event) => {},
-  //     notifyFieldClicked: (event) => {},
-  //     notifySelectedItemsChanged: (event) => {},
-  //     notifyValueChanged: (event) => {
-  //       //   let index = this.conflictsList.findIndex((x) => x.Name === event.ApiName);
-  //       //   this.conflictsList[index].Resolution = ReferenceType[event.Value];
-  //       // "{"Id":"7b5444dd-9b5c-4250-8420-6e9936b3eb7d","ApiName":"Resolution","Value":"1","ControlType":""}"
-  //       //this.conflictsList.find(c => )
-  //     },
-  //     //this.selectedRowsChanged(event, translates),
-  //   };
+  addons = FakeData.Addons;
+  @ViewChild(PepListComponent) customList: PepListComponent;
 
   constructor(
+    private dataConvertorService: DataConvertorService,
+    private utilitiesService: UtilitiesService,
+    private translate: TranslateService,
+    private customizationService: CustomizationService,
+    private httpService: HttpService,
+    private addonService: AddonService,
     //private translate: TranslateService,
     //private backendApiService: AddonApiService,
     //private userService: UserService,
@@ -60,13 +92,25 @@ export class ImportAtdComponent implements OnInit {
     private importatdService: ImportAtdService
   ) {
     this.getActivityTypes();
+    const browserCultureLang = translate.getBrowserCultureLang();
+    this.groupButtons = [
+      {
+        key: "1",
+        value: "test",
+        class: "",
+        callback: () => this.onGroupButtonClicked(event, "test"),
+        icon: null,
+      },
+      {
+        key: "2",
+        value: "",
+        class: "caution",
+        callback: () => this.onGroupButtonClicked(event, "del"),
+        icon: "system_bin",
+      },
+    ];
   }
 
-  elementClicked(event) {
-    //debugger;
-    this.selectedActivity = event.value;
-    // alert("clicked");
-  }
   getActivityTypes() {
     this.activityTypes = [];
     this.importatdService.getTypes((types) => {
@@ -77,8 +121,24 @@ export class ImportAtdComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.customizationService.setThemeVariables();
 
+    // this.httpService.getHttpCall('http://get_data')
+    //     .subscribe(
+    //         (res) => {
+    //             debugger;
+    //             console.log('')
+    //         },
+    //         (error) => {
+    //             debugger;
+    //             console.log(error);
+    //         },
+    //         () => {
+    //             debugger;
+    //         }
+    // );
+  }
   async onOkConflictsClicked() {
     let resulotion = {};
     this.conflictsList.forEach(async (conflict) => {
@@ -182,6 +242,7 @@ export class ImportAtdComponent implements OnInit {
     if (this.webhooks.length > 0) {
       this.showConflictResolution = false;
       this.showWebhooksResolution = true;
+      this.loadlist("all");
     } else {
       this.callToImportATD();
     }
@@ -361,19 +422,27 @@ export class ImportAtdComponent implements OnInit {
 
   async onCancelClicked() {}
 
+  onListChange(event) {
+    // debugger;
+  }
+
+  onCustomizeFieldClick(event) {
+    // debugger;
+  }
+
+  selectedRowsChanged(selectedRowsCount) {
+    // debugger;
+  }
+
   async importAtd() {
     try {
       console.log(`selectedActivity: ${this.selectedActivity}`);
 
       await this.importatdService
         .getTypeOfSubType(this.selectedActivity)
-        .subscribe((type) => {
-          if (type.Type === 2) {
-            this.typeString = `transactions`;
-          } else {
-            this.typeString = `activities`;
-          }
-
+        .subscribe((typeDefinition) => {
+          this.getTypeString(typeDefinition);
+          this.typeUUID = typeDefinition.UUID;
           this.importatdService
             .callToServerAPI(
               "build_references_mapping",
@@ -381,54 +450,52 @@ export class ImportAtdComponent implements OnInit {
               { subtype: this.selectedActivity },
               { references: this.importatdService.exportedAtd.References }
             )
-            .subscribe((res) => {
+            .subscribe(async (res) => {
               this.referenceMap = res;
-              //   if (this.referenceMap && this.referenceMap.Mapping.length > 0) {
-              //     let identifier: String = ``;
-              //     this.conflictsList = await this.getConflictsResulotion(
-              //       referenceMap
-              //     );
+              if (this.referenceMap && this.referenceMap.Mapping.length > 0) {
+                let identifier: String = ``;
+                this.getConflictsResulotion(this.referenceMap).then(
+                  async (res) => {
+                    this.conflictsList = res;
 
-              //     if (this.conflictsList && this.conflictsList.length > 0) {
-              //       // get from dynamo
-              //       let resolutionFromDynmo = await this.importatdService.papiClient.addons.api
-              //         .uuid(this.importatdService.pluginUUID)
-              //         .file("api")
-              //         .func("get_from_dynamo")
-              //         .get({ table: `importExportATD`, key: `resolution` });
-              //       let webhooksFromDynmo = await this.importatdService.papiClient.addons.api
-              //         .uuid(this.importatdService.pluginUUID)
-              //         .file("api")
-              //         .func("get_from_dynamo")
-              //         .get({ table: `importExportATD`, key: `webhooks` });
-              //       debugger;
+                    if (this.conflictsList && this.conflictsList.length > 0) {
+                      // get from dynamo
+                      let resolutionFromDynmo = await this.importatdService.callToAddonApi(
+                        "get_from_dynamo",
+                        { table: `importExportATD`, key: `resolution` }
+                      );
+                      let webhooksFromDynmo = await this.importatdService.callToAddonApi(
+                        "get_from_dynamo",
+                        { table: `importExportATD`, key: `webhooks` }
+                      );
+                      this.conflictsList.forEach((c) => {
+                        const val = resolutionFromDynmo[0].Value[c.ID];
+                        if (val != null && val != undefined) {
+                          c.Resolution = ResolutionOption.toString(val);
+                        }
+                      });
 
-              //       this.conflictsList.forEach((c) => {
-              //         const val = resolutionFromDynmo[0].Value[c.ID];
-              //         if (val != null && val != undefined) {
-              //           c.Resolution = ResolutionOption.toString(val);
-              //         }
-              //       });
+                      this.webhooks.forEach((w) => {
+                        const val = webhooksFromDynmo[0].Value[w.UUID];
+                        if (val != null && val != undefined && val != {}) {
+                          w.Url = val.url;
+                          w.SecretKey = val.secretKey;
+                        }
+                      });
 
-              //       this.webhooks.forEach((w) => {
-              //         const val = webhooksFromDynmo[0].Value[w.UUID];
-              //         if (val != null && val != undefined && val != {}) {
-              //           w.Url = val.url;
-              //           w.SecretKey = val.secretKey;
-              //         }
-              //       });
-
-              //       this.showWebhooksResolution = false;
-              //       this.showConflictResolution = true;
-              //     } else if (this.webhooks.length > 0) {
-              //       this.showConflictResolution = false;
-              //       this.showWebhooksResolution = true;
-              //     } else {
-              //       this.callToImportATD();
-              //     }
-              //     //TODO
-              //     //this.typesList ? this.typesList.reload() : null;
-              //   }
+                      this.showWebhooksResolution = false;
+                      this.showConflictResolution = true;
+                    } else if (this.webhooks.length > 0) {
+                      this.showConflictResolution = false;
+                      this.showWebhooksResolution = true;
+                    } else {
+                      this.callToImportATD();
+                    }
+                  }
+                );
+                //TODO
+                //this.typesList ? this.typesList.reload() : null;
+              }
             });
         });
 
@@ -436,17 +503,12 @@ export class ImportAtdComponent implements OnInit {
     } catch {}
   }
 
-  private async fillAtdNameAndUUID() {
-    await this.importatdService.papiClient
-      .get(`/types/${this.selectedActivity}`)
-      .then((type) => {
-        this.typeUUID = type.UUID;
-        if (type.Type === 2) {
-          this.typeString = `transactions`;
-        } else {
-          this.typeString = `activities`;
-        }
-      });
+  private getTypeString(type: any) {
+    if (type.Type === 2) {
+      this.typeString = `transactions`;
+    } else {
+      this.typeString = `activities`;
+    }
   }
 
   async getConflictsResulotion(referenceMap: References) {
@@ -479,7 +541,7 @@ export class ImportAtdComponent implements OnInit {
         (pair) => pair.Origin.ID === ref.ID || pair.Origin.Name === ref.Name
       );
 
-      if (referencedPair.Destination === null) {
+      if (!referencedPair.Destination) {
         // For objects with a path (such as custom form), if a matching object does not exist, then continue (create this object in the Execution step).
         if (
           ref.Type === ReferenceType.FileStorage ||
@@ -607,4 +669,221 @@ export class ImportAtdComponent implements OnInit {
       this.importatdService.uploadFile(files[0]);
     }
   }
+
+  //#region list conflocts
+  ngAfterViewInit() {
+    this.loadlist("all");
+
+    //this.loadlist2("all");
+  }
+
+  onMenuItemClicked(event) {
+    alert(event.apiName);
+  }
+
+  onGroupButtonClicked(event, title) {
+    alert(title);
+  }
+
+  onValueChanged(event) {
+    // alert(event.value);
+    // debugger;
+    // this.checkForChanges = new Date();
+
+    if (event.apiName == "color1") {
+      this.color = event.value;
+    } else {
+      this.value = "changed";
+    }
+  }
+
+  elementClicked(event) {
+    //debugger;
+    this.selectedActivity = event.value;
+    // alert("clicked");
+  }
+
+  loadlist(apiEndpoint) {
+    const endpoint = "addons";
+    const addonManagerUUID = "bd629d5f-a7b4-4d03-9e7c-67865a6d82a9";
+    const url = "https://papi.sandbox.pepperi.com/v1.0/addons/installed_addons";
+
+    // this.addonService.getAddonApiCall(addonManagerUUID, 'api', endpoint)
+    // this.httpService.getHttpCall(url)
+    //     .subscribe(
+    //         (res) => {
+    //             debugger;
+    //             this.loadAddons(res.Addons);
+    //         },
+    //         (error) => {
+    //             debugger;
+    //             console.log(error);
+    //         },
+    //         () => {
+    //             debugger;
+    //         }
+    //     );
+
+    this.loadAddons(this.addons);
+  }
+
+  loadAddons(addons) {
+    if (this.customList && addons) {
+      const tableData = new Array<PepRowData>();
+      addons.forEach((addon: any) => {
+        const userKeys = ["Name", "Description", "Version"];
+        const supportUserKeys = ["Type", "AutomaticUpgrade"];
+        const allKeys = [...userKeys, ...supportUserKeys];
+        tableData.push(this.convertAddonToPepRowData(addon, allKeys));
+      });
+      const pepperiListObj = this.dataConvertorService.convertListData(
+        tableData
+      );
+      const buffer = [];
+      if (pepperiListObj.Rows) {
+        pepperiListObj.Rows.forEach((row) => {
+          const osd = new ObjectSingleData(pepperiListObj.UIControl, row);
+          osd.IsEditable = true;
+          buffer.push(osd);
+        });
+      }
+
+      this.customList.initListData(
+        pepperiListObj.UIControl,
+        buffer.length,
+        buffer,
+        this.viewType,
+        "",
+        true
+      );
+    }
+  }
+
+  convertAddonToPepRowData(addon: any, customKeys = null) {
+    const row = new PepRowData();
+    row.Fields = [];
+    const keys = customKeys ? customKeys : Object.keys(addon);
+    keys.forEach((key) => row.Fields.push(this.initDataRowField(addon, key)));
+    return row;
+  }
+
+  initDataRowField(addon: any, key: any): PepFieldData {
+    const dataRowField: PepFieldData = {
+      ApiName: key,
+      Title: this.translate.instant(key),
+      XAlignment: 1,
+      FormattedValue: addon[key] ? addon[key].toString() : "",
+      Value: addon[key] ? addon[key].toString() : "",
+      ColumnWidth: 10,
+      AdditionalValue: "",
+      OptionalValues: [],
+      FieldType: FIELD_TYPE.TextBox,
+    };
+
+    // addon.Addon.UUID === '00000000-0000-0000-0000-000000000a91' ? this.currentApiVersion = addon.Version : null;
+    const versions = this.utilitiesService.isJsonString(addon.AdditionalData)
+      ? JSON.parse(addon.AdditionalData)
+      : {};
+    const hasVersions =
+      versions &&
+      (versions.LatestPhased ||
+        (versions.AllVersions && versions.AllVersions.length > 0))
+        ? true
+        : false;
+    versions && versions.LatestPhased
+      ? versions.AllVersions.push(versions.LatestPhased)
+      : null;
+    const installed = addon.UUID !== "";
+    const systemData = this.utilitiesService.isJsonString(addon.SystemData)
+      ? JSON.parse(addon.SystemData.toString())
+      : {};
+    const currentVersion = hasVersions
+      ? versions.AllVersions.filter(
+          (version) => version && addon && version.Version === addon.Version
+        )[0]
+      : null;
+
+    const isLatestPhased =
+      currentVersion && versions && versions.LatestPhased
+        ? currentVersion.Version === versions.LatestPhased.Version ||
+          !(
+            Date.parse(currentVersion.CreationDateTime) <
+              Date.parse(versions.LatestPhased.StartPhasedDateTime) &&
+            (Date.parse(versions.LatestPhased.StartPhasedDateTime) <=
+              Date.now() ||
+              versions.LatestPhased.StartPhasedDateTime === null)
+          )
+        : true;
+    const isLatestAvailable =
+      currentVersion && hasVersions
+        ? versions.AllVersions.filter((version) => version).filter(
+            (ver) =>
+              ver.Version !== currentVersion.Version &&
+              Date.parse(ver.CreationDateTime) >
+                Date.parse(currentVersion.CreationDateTime)
+          ).length === 0
+        : true;
+
+    switch (key) {
+      case "Type":
+        const addonType =
+          addon.Addon && addon.Addon[key] && AddonType[addon.Addon[key]]
+            ? AddonType[addon.Addon[key]]
+            : "";
+        dataRowField.FormattedValue = addonType;
+        dataRowField.AdditionalValue = dataRowField.Value = addonType;
+        break;
+      case "Description":
+        dataRowField.ColumnWidth = 25;
+        dataRowField.AdditionalValue = addon.Addon.Type;
+        dataRowField.FormattedValue = addon.Addon[key] ? addon.Addon[key] : "";
+        dataRowField.Value = addon.Addon[key] ? addon.Addon[key] : "";
+        break;
+      case "Name":
+        dataRowField.ColumnWidth = 15;
+        dataRowField.AdditionalValue = addon.Addon.UUID;
+        dataRowField.FormattedValue = addon.Addon[key] ? addon.Addon[key] : "";
+        dataRowField.Value = addon.Addon[key] ? addon.Addon[key] : "";
+        break;
+      case "Version":
+        dataRowField.AdditionalValue = JSON.stringify({
+          LatestPhased: isLatestPhased,
+          LatestAvailable: isLatestAvailable,
+          HasVersions: hasVersions,
+          Installed: installed,
+        });
+        dataRowField.OptionalValues = hasVersions ? versions.AllVersions : [];
+        if (!installed) {
+          dataRowField.FormattedValue = `${this.translate.instant(
+            "NotInstalled"
+          )}`;
+        } else if (installed) {
+          dataRowField.FormattedValue = !isLatestPhased
+            ? `${addon[key]} ${this.translate.instant("UpdateAvailable")}`
+            : !hasVersions
+            ? `${addon[key]} ${this.translate.instant("Obsolete")}`
+            : `${addon[key]}`;
+        }
+
+        break;
+
+      case "AutomaticUpgrade":
+        dataRowField.FieldType = FIELD_TYPE.Boolean;
+        const automaticUpgrade = systemData.AutomaticUpgrade
+          ? systemData.AutomaticUpgrade
+          : true;
+        dataRowField.FormattedValue =
+          automaticUpgrade !== undefined ? automaticUpgrade : false;
+        dataRowField.Value =
+          automaticUpgrade !== undefined ? automaticUpgrade : false;
+        break;
+      default:
+        dataRowField.FormattedValue = addon[key] ? addon[key].toString() : "";
+        break;
+    }
+
+    return dataRowField;
+  }
+
+  //#endregion
 }

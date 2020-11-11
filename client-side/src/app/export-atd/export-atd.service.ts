@@ -19,16 +19,7 @@ export class ExportAtdService {
     private httpService: HttpService,
     private sessionService: SessionService,
     private appService: AppService
-  ) {
-    //private addonService: AddonService) {
-    // const accessToken = this.sessionService.getIdpToken();
-    // this.parsedToken = jwt(accessToken);
-    // this.papiBaseURL = this.parsedToken["pepperi.baseurl"];
-    this.papiBaseURL = this.sessionService.getPapiBaseUrl();
-    //layout servuce
-
-    //this.papiClient = PapiClient;
-  }
+  ) {}
   ngOnInit(): void {}
 
   getTypes(successFunc = null, errorFunc = null) {
@@ -55,19 +46,6 @@ export class ExportAtdService {
       }
       //errorFunc
     );
-  }
-
-  getPapiClient() {
-    return this.papiClient;
-  }
-
-  get papiClient(): PapiClient {
-    return new PapiClient({
-      baseURL: this.papiBaseURL,
-      token: this.sessionService.getIdpToken(),
-      addonUUID: this.pluginUUID,
-      suppressLogging: true,
-    });
   }
 
   getTypeOfSubType(subtypeid: string) {

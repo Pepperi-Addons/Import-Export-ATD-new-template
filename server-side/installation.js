@@ -10,17 +10,17 @@ import MyService from './my.service';
 
 exports.install = async (Client, Request) => {
     try {
-        const service = new MyService(Client);
-        const hedears = {};
-        hedears['X-Pepperi-SecretKey'] = Client.EncryptedAddonUUID;
-        hedears['X-Pepperi-OwnerID'] = Client.AddonUUID;
+        // const service = new MyService(Client);
+        // const hedears = {};
+        // hedears['X-Pepperi-SecretKey'] = Client.EncryptedAddonUUID;
+        // hedears['X-Pepperi-OwnerID'] = Client.AddonUUID;
 
-        const body = {
-            Name: `importExportATD`,
-            Type: `data`,
-            Fields: { resolution: { Type: `Object` }, webhooks: { Type: `Object` } },
-        };
-        await service.papiClient.post(`/addons/data/schemes`, body, hedears);
+        // const body = {
+        //     Name: `importExportATD`,
+        //     Type: `data`,
+        //     Fields: { resolution: { Type: `Object` }, webhooks: { Type: `Object` } },
+        // };
+        // await service.papiClient.post(`/addons/data/schemes`, body, hedears);
 
         return { success: true };
     } catch (e) {

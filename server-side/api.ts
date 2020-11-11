@@ -1022,7 +1022,6 @@ export async function build_references_mapping(
     client: Client,
     request: Request
 ) {
-    
     const service = new MyService(client);
     const params = request.query;
     const subtype = params.subtype;

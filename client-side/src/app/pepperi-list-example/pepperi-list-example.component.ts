@@ -102,6 +102,8 @@ export class PepperiListExampleComponent implements OnInit {
 
   ngAfterViewInit() {
     this.loadlist("all");
+
+    //this.loadlist2("all");
   }
 
   onMenuItemClicked(event) {

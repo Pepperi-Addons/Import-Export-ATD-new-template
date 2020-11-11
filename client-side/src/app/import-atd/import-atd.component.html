@@ -1,4 +1,4 @@
-<div class="plugin-page-container">
+<div class="addon-container">
   <div class="header-content">
     <div class="content">
       <div class="spacing-element title">
@@ -39,6 +39,24 @@
           >
             Import
           </button>
+        </div>
+        <p>showConflictResolution: {{ showConflictResolution | json }}</p>
+        <div [ngClass]="{ 'hide-list': !showConflictResolution }">
+          <div class="list-container" #listContainer>
+            <pep-list
+              [firstFieldAsLink]="false"
+              [isReport]="true"
+              [supportSorting]="false"
+              [supportResizing]="false"
+              [selectionTypeForActions]="2"
+              [noDataFoundMsg]="'No data'"
+              [parentScroll]="listContainer"
+              (notifyListChanged)="onListChange($event)"
+              (notifyFieldClicked)="onCustomizeFieldClick($event)"
+              (notifySelectedItemsChanged)="selectedRowsChanged($event)"
+            >
+            </pep-list>
+          </div>
         </div>
       </div>
     </div>

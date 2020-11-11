@@ -18,6 +18,7 @@
     "@pepperi-addons/ngx-lib": "^0.1.17",
     "@pepperi-addons/papi-sdk": "^1.16.1",
     "@pepperi-addons/scripts": "^1.0.9",
+    "@types/node-fetch": "^2.5.7",
     "latest": "^0.2.0"
   }
 }
