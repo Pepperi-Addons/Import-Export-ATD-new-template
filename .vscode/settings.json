@@ -1,0 +1,12 @@
+{
+    "javascript.implicitProjectConfig.experimentalDecorators": true,
+    "editor.wordWrapColumn": 800,
+    "cSpell.words": [
+        "checkmark",
+        "datetime",
+        "green",
+        "pepperi",
+        "tabindex"
+    ],
+    "prettier.tabWidth": 4
+}

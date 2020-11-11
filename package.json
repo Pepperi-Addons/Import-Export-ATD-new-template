@@ -1,0 +1,23 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd ./server-side && npm run build && cd .. && cd ./client-side && npm run build && cd ..",
+    "init": "npm install && cd ./server-side && npm install && cd .. && cd ./client-side && npm install && cd ..",
+    "init-ci": "npm ci && cd ./server-side && npm ci && cd .. && cd ./client-side && npm ci && cd ..",
+    "publish-addon": "npm run build && publish-addon",
+    "serve:single-spa:client-side": "cd ./client-side && ng s --disable-host-check --port 4209 --deploy-url http://localhost:4209/ --live-reload false"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pepperi-addons/ngx-lib": "^0.1.17",
+    "@pepperi-addons/papi-sdk": "^1.16.1",
+    "@pepperi-addons/scripts": "^1.0.9",
+    "latest": "^0.2.0"
+  }
+}

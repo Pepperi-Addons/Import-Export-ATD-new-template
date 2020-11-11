@@ -1,0 +1,46 @@
+<div class="plugin-page-container">
+  <div class="header-content">
+    <div class="content">
+      <div class="spacing-element title">
+        <pep-separator
+          key="sep1"
+          label="Import type definition"
+          xAlignment="'left'"
+        >
+        </pep-separator>
+      </div>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="content">
+      <div class="child1 child-container">
+        <div
+          class="container"
+          *ngIf="!showConflictResolution && !showWebhooksResolution"
+        >
+          <pep-select
+            [key]="'select1'"
+            [label]="'Select activity to import'"
+            [options]="activityTypes"
+            (valueChanged)="elementClicked($event)"
+          >
+          </pep-select>
+          <pep-attachment
+            [key]="'attachment1'"
+            [label]="'Pepperi Attachment'"
+            (valueChanged)="onFileSelect($event)"
+          >
+          </pep-attachment>
+          <button
+            (click)="importAtd()"
+            rowSpan="2"
+            mat-button
+            class="spacing-element pep-button md strong ellipsis"
+          >
+            Import
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
