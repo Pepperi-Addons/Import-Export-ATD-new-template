@@ -1,6 +1,14 @@
 .hide-list {
   display: none;
+  //visibility: hidden;
 }
+.list-container {
+  max-width: 50%;
+}
+.buttons-container {
+  text-align: center;
+}
+
 .addon-container {
   margin: 0 2rem;
 
@@ -11,7 +19,7 @@
   .header-content {
     position: sticky;
     padding-top: 1.25rem;
-    top: 64px;
+    top: 30px;
     background: white;
     z-index: 100;
     .content {

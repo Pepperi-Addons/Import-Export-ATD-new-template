@@ -15,6 +15,7 @@ import {
   AddonService,
   FIELD_TYPE,
   UtilitiesService,
+  X_ALIGNMENT_TYPE,
 } from "@pepperi-addons/ngx-lib";
 import { PepColorType } from "@pepperi-addons/ngx-lib/color";
 
@@ -169,6 +170,7 @@ export class PepperiListExampleComponent implements OnInit {
         tableData
       );
       const buffer = [];
+      debugger;
       if (pepperiListObj.Rows) {
         pepperiListObj.Rows.forEach((row) => {
           const osd = new ObjectSingleData(pepperiListObj.UIControl, row);
@@ -200,7 +202,7 @@ export class PepperiListExampleComponent implements OnInit {
     const dataRowField: PepFieldData = {
       ApiName: key,
       Title: this.translate.instant(key),
-      XAlignment: 1,
+      XAlignment: X_ALIGNMENT_TYPE.Center,
       FormattedValue: addon[key] ? addon[key].toString() : "",
       Value: addon[key] ? addon[key].toString() : "",
       ColumnWidth: 10,
@@ -297,14 +299,25 @@ export class PepperiListExampleComponent implements OnInit {
         break;
 
       case "AutomaticUpgrade":
-        dataRowField.FieldType = FIELD_TYPE.Boolean;
+        dataRowField.FieldType = FIELD_TYPE.ComboBox;
+        dataRowField.OptionalValues = [
+          {
+            Key: "test",
+            Value: "test",
+          },
+          {
+            Key: "test2",
+            Value: "test2",
+          },
+        ];
+        dataRowField.Enabled = true;
+        dataRowField.ReadOnly = false;
+
         const automaticUpgrade = systemData.AutomaticUpgrade
           ? systemData.AutomaticUpgrade
           : true;
-        dataRowField.FormattedValue =
-          automaticUpgrade !== undefined ? automaticUpgrade : false;
-        dataRowField.Value =
-          automaticUpgrade !== undefined ? automaticUpgrade : false;
+        dataRowField.FormattedValue = "test";
+        dataRowField.Value = "test";
         break;
       default:
         dataRowField.FormattedValue = addon[key] ? addon[key].toString() : "";

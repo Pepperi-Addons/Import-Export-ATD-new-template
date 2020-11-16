@@ -9,7 +9,10 @@
     "init": "npm install && cd ./server-side && npm install && cd .. && cd ./client-side && npm install && cd ..",
     "init-ci": "npm ci && cd ./server-side && npm ci && cd .. && cd ./client-side && npm ci && cd ..",
     "publish-addon": "npm run build && publish-addon",
-    "serve:single-spa:client-side": "cd ./client-side && ng s --disable-host-check --port 4209 --deploy-url http://localhost:4209/ --live-reload false"
+    "build:client-side": "cd ./client-side && ng build client-side --prod",
+    "serve:single-spa:client-side": "cd ./client-side && ng s --disable-host-check --port 4400 --deploy-url http://localhost:4400/ --live-reload false",
+    "bundle:client-side": "cd ./client-side && concat-cli -f ./dist/main.js ./dist/1.js  -o ../publish/editors/main.js",
+    "client-side": "npm run build:client-side && npm run bundle:client-side"
   },
   "keywords": [],
   "author": "",

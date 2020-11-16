@@ -11,7 +11,7 @@ import { PepDialogData } from "@pepperi-addons/ngx-lib/dialog";
 })
 export class AppService {
   idpToken =
-    "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRiYTFjNzJmMTI3NThjYzEzMzg3ZWQ3YTBiZjNlODg3IiwidHlwIjoiSldUIn0.eyJuYmYiOjE2MDUxMTczMjUsImV4cCI6MTYwNTEyMDkyNSwiaXNzIjoiaHR0cHM6Ly9pZHAuc2FuZGJveC5wZXBwZXJpLmNvbSIsImF1ZCI6WyJodHRwczovL2lkcC5zYW5kYm94LnBlcHBlcmkuY29tL3Jlc291cmNlcyIsInBlcHBlcmkuYXBpbnQiXSwiY2xpZW50X2lkIjoiaW9zLmNvbS53cm50eS5wZXBwZXJ5Iiwic3ViIjoiYmRmZTZhZjEtZTEzZC00NzdmLTkwNTMtZjA3MTBmNzZkNzFjIiwiYXV0aF90aW1lIjoxNjA1MTE3MzI1LCJpZHAiOiJsb2NhbCIsInBlcHBlcmkuYXBpbnRiYXNldXJsIjoiaHR0cHM6Ly9yZXN0YXBpLnNhbmRib3gucGVwcGVyaS5jb20iLCJlbWFpbCI6Im1hdHJpeHFhQHBlcHBlcml0ZXN0LmNvbSIsInBlcHBlcmkuaWQiOjIxMTQ4MiwicGVwcGVyaS51c2VydXVpZCI6ImJkZmU2YWYxLWUxM2QtNDc3Zi05MDUzLWYwNzEwZjc2ZDcxYyIsInBlcHBlcmkuZGlzdHJpYnV0b3J1dWlkIjoiNTBmOTQwMzYtMmE1My00MWE1LTg1MjctZmNkYTIxMjFhNTE2IiwicGVwcGVyaS5kaXN0cmlidXRvcmlkIjo3Nzg2MDE1LCJwZXBwZXJpLmRhdGFjZW50ZXIiOiJzYW5kYm94IiwicGVwcGVyaS5lbXBsb3llZXR5cGUiOjEsInBlcHBlcmkuYmFzZXVybCI6Imh0dHBzOi8vcGFwaS5zdGFnaW5nLnBlcHBlcmkuY29tL1YxLjAiLCJuYW1lIjoiTWF0cml4IFFBIiwic2NvcGUiOlsicGVwcGVyaS5hcGludCIsIm9mZmxpbmVfYWNjZXNzIl0sImFtciI6WyJwd2QiXX0.I5nXlEY2ssSSgTomv82d0kaXqnz77kzAjRF9Iwa4BecF8iYcFxhZdOi0RQBPvOe1tibVrB2QyujSEgZ1_jm0mdTLsWYFQocF1GBkDdzr5jgnV_ar0q75PwtKGzf1WgLKPkHd6SZEXQejaa1NI6P8cCaP7WbZzodK0OJnp2mt33ol9tWhsD_bghpftsLCSiFh7Phn_BXJtORdRznDlpo1K6DGGABo3EJE0MJtZRZzoqq2gLohQn6Z06-NYNkXMAfH_F--hNGlcXwPegJ5J70ZrFKzDLvfttzkdCYDtZvgNOR2t2B6AfRnRFFi2qAG4CBsuPYGkZVtGCs8eCqZole7Ew";
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRiYTFjNzJmMTI3NThjYzEzMzg3ZWQ3YTBiZjNlODg3IiwidHlwIjoiSldUIn0.eyJuYmYiOjE2MDU1MzIzNjQsImV4cCI6MTYwNTUzNTk2NCwiaXNzIjoiaHR0cHM6Ly9pZHAuc2FuZGJveC5wZXBwZXJpLmNvbSIsImF1ZCI6WyJodHRwczovL2lkcC5zYW5kYm94LnBlcHBlcmkuY29tL3Jlc291cmNlcyIsInBlcHBlcmkuYXBpbnQiXSwiY2xpZW50X2lkIjoiaW9zLmNvbS53cm50eS5wZXBwZXJ5Iiwic3ViIjoiYmRmZTZhZjEtZTEzZC00NzdmLTkwNTMtZjA3MTBmNzZkNzFjIiwiYXV0aF90aW1lIjoxNjA1NTMyMzY0LCJpZHAiOiJsb2NhbCIsInBlcHBlcmkuYXBpbnRiYXNldXJsIjoiaHR0cHM6Ly9yZXN0YXBpLnNhbmRib3gucGVwcGVyaS5jb20iLCJlbWFpbCI6Im1hdHJpeHFhQHBlcHBlcml0ZXN0LmNvbSIsInBlcHBlcmkuaWQiOjIxMTQ4MiwicGVwcGVyaS51c2VydXVpZCI6ImJkZmU2YWYxLWUxM2QtNDc3Zi05MDUzLWYwNzEwZjc2ZDcxYyIsInBlcHBlcmkuZGlzdHJpYnV0b3J1dWlkIjoiNTBmOTQwMzYtMmE1My00MWE1LTg1MjctZmNkYTIxMjFhNTE2IiwicGVwcGVyaS5kaXN0cmlidXRvcmlkIjo3Nzg2MDE1LCJwZXBwZXJpLmRhdGFjZW50ZXIiOiJzYW5kYm94IiwicGVwcGVyaS5lbXBsb3llZXR5cGUiOjEsInBlcHBlcmkuYmFzZXVybCI6Imh0dHBzOi8vcGFwaS5zdGFnaW5nLnBlcHBlcmkuY29tL1YxLjAiLCJuYW1lIjoiTWF0cml4IFFBIiwic2NvcGUiOlsicGVwcGVyaS5hcGludCIsIm9mZmxpbmVfYWNjZXNzIl0sImFtciI6WyJwd2QiXX0.TWKs_nbcy89sRjflkihP_rzrrrr7or1XS05lAw6DYYD7ravJvgoCG-wl8qpZN0qkQfFg0K0RbBOjES0mBCiayp9Yo3-yr5uVMBe1z83rtFnT9AT5gXir9V7moyE1CUeYYDOYMG1ytxw5JbLNZPteLD8RJytg0M65fQfM0ZO-BFOL6f2AEg5m55LjxIyli8ARLJF5pccYNMKA-I-G8NR2wSpUGmM88saSF_gKpw5omV3E9_N6ypzO104UymKfcFsNH5h3l7oPA14E8E6QCUp3LRGzxECySJnLKfqiYVoUdlWgWK-bjqMFWe29fYMl083B-GjwMYi6UT8s6G4JcFiMyw";
   constructor(
     private httpService: HttpService,
     private addonService: AddonService,
@@ -50,22 +50,28 @@ export class AppService {
     );
   }
 
-  openDialog(title: string, content: string) {
+  openDialog(title: string, content: string, callback?: any) {
     const actionButton: PepDialogActionButton = {
       title: "OK",
       className: "",
-      callback: () => {},
+      callback: callback,
     };
 
-    const dialogData: PepDialogData = {
+    const dialogData = new PepDialogData({
       title: title,
       content: content,
       actionButtons: [actionButton],
-      showFooter: true,
       showHeader: false,
-      type: "cancel-ok",
-    };
-    this.dialogService.openDefaultDialog(dialogData);
+      type: "custom",
+    });
+    this.dialogService
+      .openDefaultDialog(dialogData)
+      .afterClosed()
+      .subscribe((callback) => {
+        if (callback) {
+          callback();
+        }
+      });
   }
 
   getFromAPI(apiObject, successFunc, errorFunc) {
@@ -94,5 +100,9 @@ export class AppService {
 
   getPapiCall(url: string) {
     return this.httpService.getPapiApiCall(url);
+  }
+
+  postPapiCall(url: string, body: any) {
+    return this.httpService.postPapiApiCall(url, body);
   }
 }

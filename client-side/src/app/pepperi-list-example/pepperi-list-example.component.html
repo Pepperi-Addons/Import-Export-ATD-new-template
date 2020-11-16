@@ -34,10 +34,10 @@
       <div class="list-container" #listContainer>
         <pep-list
           [firstFieldAsLink]="false"
-          [isReport]="true"
+          [isReport]="false"
           [supportSorting]="false"
           [supportResizing]="false"
-          [selectionTypeForActions]="2"
+          [selectionTypeForActions]="'single'"
           [noDataFoundMsg]="'No data'"
           [parentScroll]="listContainer"
           (notifyListChanged)="onListChange($event)"

@@ -2,11 +2,7 @@
   <div class="header-content">
     <div class="content">
       <div class="spacing-element title">
-        <pep-separator
-          key="sep1"
-          label="Import type definition"
-          xAlignment="'left'"
-        >
+        <pep-separator key="sep1" [label]="separatorTitle" xAlignment="'left'">
         </pep-separator>
       </div>
     </div>
@@ -27,7 +23,7 @@
           </pep-select>
           <pep-attachment
             [key]="'attachment1'"
-            [label]="'Pepperi Attachment'"
+            [label]="'Upload type definition file'"
             (valueChanged)="onFileSelect($event)"
           >
           </pep-attachment>
@@ -40,23 +36,84 @@
             Import
           </button>
         </div>
-        <p>showConflictResolution: {{ showConflictResolution | json }}</p>
-        <div [ngClass]="{ 'hide-list': !showConflictResolution }">
-          <div class="list-container" #listContainer>
-            <pep-list
-              [firstFieldAsLink]="false"
-              [isReport]="true"
-              [supportSorting]="false"
-              [supportResizing]="false"
-              [selectionTypeForActions]="2"
-              [noDataFoundMsg]="'No data'"
-              [parentScroll]="listContainer"
-              (notifyListChanged)="onListChange($event)"
-              (notifyFieldClicked)="onCustomizeFieldClick($event)"
-              (notifySelectedItemsChanged)="selectedRowsChanged($event)"
-            >
-            </pep-list>
-          </div>
+      </div>
+      <div
+        class="list-container"
+        #conflictslistContainer
+        [ngClass]="{ 'hide-list': !showConflictResolution }"
+      >
+        <p>
+          <strong
+            >Some conflicts were found. Please define the proper
+            resolution.</strong
+          >
+        </p>
+
+        <pep-list
+          #conflictslist
+          [firstFieldAsLink]="false"
+          [isReport]="false"
+          [supportSorting]="false"
+          [supportResizing]="false"
+          [selectionTypeForActions]="'single'"
+          [noDataFoundMsg]="'No data'"
+          [parentScroll]="conflictslistContainer"
+          (notifyValueChanged)="notifyValueChanged($event)"
+        >
+        </pep-list>
+        <div class="buttons-container">
+          <button
+            rowSpan="2"
+            mat-button
+            class="spacing-element pep-button md strong ellipsis"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="onOkConflictsClicked()"
+            rowSpan="2"
+            mat-button
+            class="spacing-element pep-button md strong ellipsis"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="list-container"
+        #webhookslistContainer
+        [ngClass]="{ 'hide-list': !showWebhooksResolution }"
+      >
+        <p><strong>Please verify the following web services URLs.</strong></p>
+        <pep-list
+          #webhookslist
+          [firstFieldAsLink]="false"
+          [isReport]="false"
+          [supportSorting]="false"
+          [supportResizing]="false"
+          [selectionTypeForActions]="'single'"
+          [noDataFoundMsg]="'No data'"
+          [parentScroll]="webhookslistContainer"
+          (notifyValueChanged)="notifyValueChanged($event)"
+        >
+        </pep-list>
+        <div class="buttons-container">
+          <button
+            rowSpan="2"
+            mat-button
+            class="spacing-element pep-button md strong ellipsis"
+          >
+            Cancel
+          </button>
+          <button
+            (click)="onOkWebhooksClicked()"
+            rowSpan="2"
+            mat-button
+            class="spacing-element pep-button md strong ellipsis"
+          >
+            OK
+          </button>
         </div>
       </div>
     </div>

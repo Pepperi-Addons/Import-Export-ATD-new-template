@@ -13,5 +13,6 @@ server.addStaticFolder("/assets/plugins/" + addon_config_json_1["default"].Addon
 // serve the plugin assets locally
 server.addStaticFolder("/Addon/Public/" + addon_config_json_1["default"].AddonUUID + "/" + addon_config_json_1["default"].AddonVersion, process.cwd() + '/../publish/assets');
 server.addStaticFolder("/assets/plugins/" + addon_config_json_1["default"].AddonUUID + "/" + addon_config_json_1["default"].AddonVersion, process.cwd() + '/../publish/assets');
+server.addStaticFolder("" , process.cwd() + '/../publish/assets');
 server.start();
 console.log("Open webapp at: ", addon_config_json_1["default"].WebappBaseUrl + "/settings/" + addon_config_json_1["default"].AddonUUID + "/" + addon_config_json_1["default"].DefaultEditor + "?dev=true");

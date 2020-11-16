@@ -12,37 +12,30 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "addon",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/standalone-client-side",
+            "outputPath": "./dist",
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "",
+            "main": "src/main.single-spa.ts",
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "stylePreprocessorOptions": {
-                "includePaths": [
-                    "dist",
-                    "node_modules",
-                    "node_modules/@pepperi-addons"
-                ]
-            },
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/theme.scss",
-              "node_modules/quill/dist/quill.snow.css",
-              "node_modules/quill/dist/quill.core.css"
+              "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/zone.js/dist/zone.js"
-            ]
+            "scripts": [],
+            "customWebpackConfig": {
+              "path": "extra-webpack.config.js",
+              "libraryName": "client-side",
+              "libraryTarget": "umd"
+            }
           },
           "configurations": {
             "production": {
@@ -53,7 +46,7 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "all",
+              "outputHashing": "none",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
@@ -76,7 +69,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
             "browserTarget": "client-side:build"
           },

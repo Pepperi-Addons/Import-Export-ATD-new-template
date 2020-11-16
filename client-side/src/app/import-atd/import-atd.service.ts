@@ -5,7 +5,7 @@ import { AddonService } from "pepperi-addon-service";
 import { ActivityTypeDefinition } from "./../../../../models/activityTypeDefinition";
 import { PapiClient } from "@pepperi-addons/papi-sdk";
 import jwt from "jwt-decode";
-import { KeyValuePair } from "@pepperi-addons/ngx-lib";
+import { HttpService, KeyValuePair } from "@pepperi-addons/ngx-lib";
 import { AppService } from "../app.service";
 
 @Injectable({
@@ -22,14 +22,37 @@ export class ImportAtdService {
   exportedAtdstring: string;
   exportedAtd: ActivityTypeDefinition;
 
-  constructor(private appService: AppService) {}
+  constructor(
+    private appService: AppService,
+    private httpService: HttpService
+  ) {}
 
-  callToAddonApi(methodName: string, params: any): Promise<any> {
-    return this.appService
-      .getAddonServerAPI(this.pluginUUID, "api", methodName, { params: params })
-      .toPromise();
+  //   callToAddonApi(
+  //     method: string,
+  //     methodName: string,
+  //     params: any
+  //   ): Promise<any> {
+  //     if (method === "GET") {
+  //       return this.appService
+  //         .getAddonServerAPI(this.pluginUUID, "api", methodName, {
+  //           params: params,
+  //         })
+  //         .toPromise();
+  //     } else if (method === "post") {
+  //       return this.appService
+  //         .getAddonServerAPI(this.pluginUUID, "api", methodName, {
+  //           params: params,
+  //         })
+  //         .toPromise();
+  //     }
+  //   }
+
+  callToPapi(method: string, url: string, body?: any): Promise<any> {
+    if (method === "GET") {
+    } else if (method === "POST") {
+      return this.appService.postPapiCall(url, body).toPromise();
+    }
   }
-
   getTypeOfSubType(subtypeid: string) {
     return this.appService.getPapiCall(`/types/${subtypeid}`);
   }
@@ -64,27 +87,24 @@ export class ImportAtdService {
     methodName: string,
     method: string,
     params: any,
-    body: any
-  ): any {
+    body?: any
+  ): Promise<any> {
     if (method === "GET") {
-      return this.appService.getAddonServerAPI(
-        this.pluginUUID,
-        "api",
-        methodName,
-        { params: params }
-      );
+      return this.appService
+        .getAddonServerAPI(this.pluginUUID, "api", methodName, {
+          params: params,
+        })
+        .toPromise();
     } else if (method === "POST") {
-      return this.appService.postAddonServerAPI(
-        this.pluginUUID,
-        "api",
-        methodName,
-        body,
-        { params: params }
-      );
+      return this.appService
+        .postAddonServerAPI(this.pluginUUID, "api", methodName, body, {
+          params: params,
+        })
+        .toPromise();
     }
   }
 
-  openDialog(title: string, content: string) {
-    this.appService.openDialog(title, content);
+  openDialog(title: string, content: string, callback?: any) {
+    this.appService.openDialog(title, content, callback);
   }
 }

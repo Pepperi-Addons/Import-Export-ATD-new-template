@@ -113,7 +113,7 @@ async function doExport(
         await Promise.all(getReferencesPromises).then(async (result2) => {
             console.log(`result2: ${result2}`);
             atd = {
-                UUID: "", //atdMetaData.UUID,
+                UUID: atdMetaData["UUID"],
                 InternaID: String(atdMetaData.TypeID),
                 CreationDateTime: atdMetaData.CreationDate,
                 ModificationDateTime: atdMetaData.ModificationDate,
@@ -240,7 +240,7 @@ async function getSettingsReferences(
             const reference: Reference = {
                 ID: String(accontsMetaData[accountIndex].TypeID),
                 Name: accontsMetaData[accountIndex].ExternalID,
-                Type: ReferenceType.TypeDefinition,
+                Type: ReferenceType.toString(ReferenceType.TypeDefinition),
             };
             const isExist = references.findIndex((x) => x.ID == reference.ID);
             if (isExist === -1) {
@@ -257,7 +257,7 @@ async function getSettingsReferences(
             const reference: Reference = {
                 ID: String(accontsMetaData[accountIndex].TypeID),
                 Name: accontsMetaData[accountIndex].ExternalID,
-                Type: ReferenceType.TypeDefinition,
+                Type: ReferenceType.toString(ReferenceType.TypeDefinition),
             };
             const isExist = references.findIndex((x) => x.ID == reference.ID);
             if (isExist === -1) {
@@ -273,7 +273,7 @@ async function getSettingsReferences(
                     const reference: Reference = {
                         ID: catalog.InternalID,
                         Name: catalog.ExternalID,
-                        Type: ReferenceType.Catalog,
+                        Type: ReferenceType.toString(ReferenceType.Catalog),
                         UUID: catalog.UUID,
                     };
                     const index = references.findIndex(
@@ -295,7 +295,7 @@ async function getSettingsReferences(
         const reference: Reference = {
             ID: filter.InternalID,
             Name: "Transaction Item Scope",
-            Type: ReferenceType.Filter,
+            Type: ReferenceType.toString(ReferenceType.Filter),
             UUID: filter.UUID,
             Content: JSON.stringify(filter.Data),
         };
@@ -328,7 +328,9 @@ async function getFieldsReferences(
                     const reference: Reference = {
                         ID: String(res[index].TypeID),
                         Name: res[index].ExternalID,
-                        Type: ReferenceType.TypeDefinition,
+                        Type: ReferenceType.toString(
+                            ReferenceType.TypeDefinition
+                        ),
                         UUID: field.TypeSpecificFields.ReferenceTo.UUID,
                     };
                     const isExist = references.findIndex(
@@ -351,7 +353,9 @@ async function getFieldsReferences(
                 const reference: Reference = {
                     ID: String(udt.InternalID),
                     Name: udt.TableID,
-                    Type: ReferenceType.UserDefinedTable,
+                    Type: ReferenceType.toString(
+                        ReferenceType.UserDefinedTable
+                    ),
                     Content: JSON.stringify(udt),
                 };
                 const isExist = references.findIndex(
@@ -373,7 +377,7 @@ async function getDataViewReferences(
         const reference: Reference = {
             ID: String(element.Context?.Profile.InternalID),
             Name: String(element.Context?.Profile.Name),
-            Type: ReferenceType.Profile,
+            Type: ReferenceType.toString(ReferenceType.Profile),
         };
         const index = references.findIndex((x) => x.ID == reference.ID);
         if (index === -1) references.push(reference);
@@ -391,14 +395,24 @@ async function getWorkflowReferences(
         const reference: Reference = {
             ID: element.ID,
             Name: element.Name,
-            Type: ReferenceType[element.Type],
+            Type: element.Type,
             UUID: element.UUID,
             Path: element.Path,
             Content: element.Content,
         };
-        const index = references.findIndex((x) => x.ID == reference.ID);
+
+        let index;
+        if (reference.ID) {
+            index = references.findIndex((x) => x.ID == reference.ID);
+        } else {
+            index = references.findIndex((x) => x.UUID == reference.UUID);
+        }
+
         if (index === -1) {
-            if (reference.Type === ReferenceType.FileStorage) {
+            if (
+                reference.Type ===
+                ReferenceType.toString(ReferenceType.FileStorage)
+            ) {
                 service.papiClient.fileStorage
                     .get(Number(reference.ID))
                     .then(
@@ -1053,9 +1067,8 @@ function searchMappingByName(
             (pair) => pair.Destination && pair.Destination.ID === ref.ID
         );
         if (refIndex == -1) {
-            referencesDataList =
-                referencesData[ReferenceType.toString(ref.Type)];
-            switch (ref.Type) {
+            referencesDataList = referencesData[ref.Type];
+            switch (ReferenceType[ref.Type]) {
                 case ReferenceType.Filter:
                 case ReferenceType.Profile:
                 case ReferenceType.TypeDefinition:
@@ -1127,7 +1140,6 @@ function searchMappingByName(
 function addOriginWithDestNull(ref: Reference, referencesMap: References) {
     const pair = {} as Mapping;
     pair.Origin = ref;
-    //pair.Destination = null;
     referencesMap.Mapping.push(pair);
 }
 
@@ -1137,10 +1149,9 @@ function searchMappingByID(
     referencesMap: References
 ) {
     exportReferences.forEach((ref) => {
-        if (ref.Type !== ReferenceType.Webhook) {
+        if (ref.Type !== ReferenceType.toString(ReferenceType.Webhook)) {
             let referencesDataList: any = [];
-            referencesDataList =
-                referencesData[ReferenceType.toString(ref.Type)];
+            referencesDataList = referencesData[ref.Type];
             const referenceDataIdIndex = referencesDataList.findIndex(
                 (data) =>
                     data.InternalID &&
@@ -1199,25 +1210,27 @@ async function GetReferencesData(
     exportReferences: Reference[]
 ): Promise<any> {
     const profileIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.Profile
+        (ref) => ref.Type === ReferenceType.toString(ReferenceType.Profile)
     );
     const genericListIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.List
+        (ref) => ref.Type === ReferenceType.toString(ReferenceType.List)
     );
     const fileIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.FileStorage
+        (ref) => ref.Type === ReferenceType.toString(ReferenceType.FileStorage)
     );
     const activityTypeDefinitionIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.TypeDefinition
+        (ref) =>
+            ref.Type === ReferenceType.toString(ReferenceType.TypeDefinition)
     );
     const catalogIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.Catalog
+        (ref) => ref.Type === ReferenceType.toString(ReferenceType.Catalog)
     );
     const filterIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.Filter
+        (ref) => ref.Type === ReferenceType.toString(ReferenceType.Filter)
     );
     const udtIndex = exportReferences.findIndex(
-        (ref) => ref.Type === ReferenceType.UserDefinedTable
+        (ref) =>
+            ref.Type === ReferenceType.toString(ReferenceType.UserDefinedTable)
     );
 
     const referencesData = {} as ReferenceData;
@@ -1263,22 +1276,18 @@ async function GetReferencesData(
     if (profileIndex > -1) {
         promises.push(service.papiClient.profiles.iter().toArray());
         callbaks.push("Profile");
-        //await getReferencesDataObject(service, '/profiles').then((res) => (referencesData.Profile = res));
     }
     if (fileIndex > -1) {
         promises.push(service.papiClient.fileStorage.iter().toArray());
         callbaks.push("FileStorage");
-        //await getReferencesFiles(service).then((res) => (referencesData.FileStorage = res));
     }
     if (activityTypeDefinitionIndex > -1) {
         promises.push(service.papiClient.types.iter().toArray());
         callbaks.push("TypeDefinition");
-        //await getReferencesTypes(service).then((res) => (referencesData.TypeDefinition = res));
     }
     if (catalogIndex > -1) {
-        //promises.push(service.papiClient.catalogs.iter().toArray());
-        //callbaks.push("Catalog");
-        //await getReferencesDataObject(service, 'Catalogs').then((res) => (referencesData.Catalog = res));
+        promises.push(service.papiClient.get("Catalogs"));
+        callbaks.push("Catalog");
     }
     if (filterIndex > -1) {
         promises.push(
@@ -1287,14 +1296,12 @@ async function GetReferencesData(
             )
         );
         callbaks.push("Filter");
-        //await getTransactionItemScope(service).then((res) => (referencesData.Filter = res));
     }
     if (udtIndex > -1) {
         promises.push(
             service.papiClient.metaData.userDefinedTables.iter().toArray()
         );
         callbaks.push("UserDefinedTable");
-        //await getUDTs(service).then((res) => (referencesData.UserDefinedTable = res));
     }
     await Promise.all(promises).then((res) => {
         for (let i = 0; i < callbaks.length; i++) {

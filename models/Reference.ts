@@ -1,12 +1,12 @@
 import { ReferenceType } from "./referenceType";
 
 export interface Reference {
-  Type: typeof ReferenceType[keyof typeof ReferenceType];
-  ID: string;
-  Name: string;
-  UUID?: string;
-  Path?: string;
-  Content?: any;
+    Type: string; //typeof ReferenceType[keyof typeof ReferenceType];
+    ID: string;
+    Name: string;
+    UUID?: string;
+    Path?: string;
+    Content?: any;
 }
 
 // export enum ReferenceType {

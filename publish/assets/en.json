@@ -72,5 +72,7 @@
         "INFO_MISSING_FILE": "Missing file",
         "INFO_MISSING_IMAGE": "Missing image",
         "INFO_MISSING_SIGNATURE": "Signature missing"
-    }
+    },
+    "Conflict_Resolution_Type_Owerwrite": "Owerwrite existing",
+    "Conflict_Resolution_Type_UseExist": "Use existing"
 }

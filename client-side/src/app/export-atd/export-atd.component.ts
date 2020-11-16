@@ -28,12 +28,6 @@ import {
 
 import { ExportAtdService } from "./export-atd.service";
 
-export enum AddonType {
-  System = 1,
-  Public = 2,
-  Distributor = 3,
-  Dev = 4,
-}
 
 @Component({
   selector: "export-atd",
@@ -76,9 +70,7 @@ export class ExportAtdComponent implements OnInit {
   }
 
   elementClicked(event) {
-    //debugger;
     this.selectedActivity = event.value;
-    // alert("clicked");
   }
 
   async exportAtd() {
