@@ -5,14 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cd ./server-side && npm run build && cd .. && cd ./client-side && npm run build && cd ..",
+    "build": "cd ./server-side && npm run build && cd .. && cd ./client-side && npm run build:client-side && npm run bundle:client-side && cd ..",
     "init": "npm install && cd ./server-side && npm install && cd .. && cd ./client-side && npm install && cd ..",
     "init-ci": "npm ci && cd ./server-side && npm ci && cd .. && cd ./client-side && npm ci && cd ..",
     "publish-addon": "npm run build && publish-addon",
-    "build:client-side": "cd ./client-side && ng build client-side --prod",
-    "serve:single-spa:client-side": "cd ./client-side && ng s --disable-host-check --port 4400 --deploy-url http://localhost:4400/ --live-reload false",
-    "bundle:client-side": "cd ./client-side && concat-cli -f ./dist/main.js ./dist/1.js  -o ../publish/editors/main.js",
-    "client-side": "npm run build:client-side && npm run bundle:client-side"
+    "pub-addon": "publish-addon"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +17,7 @@
   "dependencies": {
     "@pepperi-addons/ngx-lib": "^0.1.17",
     "@pepperi-addons/papi-sdk": "^1.16.1",
-    "@pepperi-addons/scripts": "^1.0.9",
+    "@pepperi-addons/scripts": "^1.0.26",
     "@types/node-fetch": "^2.5.7",
     "latest": "^0.2.0"
   }

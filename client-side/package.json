@@ -10,7 +10,9 @@
     "e2e": "ng e2e",
     "build:single-spa:client-side": "ng build client-side --prod --deploy-url http://localhost:4400/",
     "serve:single-spa:client-side": "ng s --project client-side --disable-host-check --port 4400 --deploy-url http://localhost:4400/ --live-reload false",
-    "assets-server": "http-server ./src/ -p 4400 -d --cors"
+    "assets-server": "http-server ./src/ -p 4400 -d --cors",
+    "build:client-side": "ng build client-side --prod",
+    "bundle:client-side": "concat-cli -f ./dist/main.js ./dist/1.js  -o ../publish/editors/main.js"
   },
   "private": true,
   "dependencies": {
@@ -33,7 +35,7 @@
     "@ngx-gallery/core": "^5.0.0-beta.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
-    "@pepperi-addons/ngx-lib": "^0.1.24",
+    "@pepperi-addons/ngx-lib": "^0.1.26",
     "@pepperi-addons/papi-sdk": "^1.16.0",
     "@tweenjs/tween.js": "^17.1.1",
     "angular2-signaturepad": "^2.11.0",

@@ -21,6 +21,7 @@ exports.install = async (Client, Request) => {
         //     Fields: { resolution: { Type: `Object` }, webhooks: { Type: `Object` } },
         // };
         // await service.papiClient.post(`/addons/data/schemes`, body, hedears);
+        {NG10: true}
 
         return { success: true };
     } catch (e) {

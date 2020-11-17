@@ -9,19 +9,19 @@ import { ImportAtdComponent } from "./import-atd/import-atd.component";
 
 const routes: Routes = [
   {
-    path: `settings/95501678-6687-4fb3-92ab-1155f47f839e/ngx-lib-components`,
+    path: `settings/e9029d7f-af32-4b0e-a513-8d9ced6f8186/ngx-lib-components`,
     component: PepperiNgxLibExamplesComponent,
   },
   {
-    path: `settings/95501678-6687-4fb3-92ab-1155f47f839e/pepperi-list-example`,
+    path: `settings/e9029d7f-af32-4b0e-a513-8d9ced6f8186/pepperi-list-example`,
     component: PepperiListExampleComponent,
   },
   {
-    path: `settings/95501678-6687-4fb3-92ab-1155f47f839e/export-atd`,
+    path: `settings/e9029d7f-af32-4b0e-a513-8d9ced6f8186/export-atd`,
     component: ExportAtdComponent,
   },
   {
-    path: `settings/95501678-6687-4fb3-92ab-1155f47f839e/import-atd`,
+    path: `settings/e9029d7f-af32-4b0e-a513-8d9ced6f8186/import-atd`,
     component: ImportAtdComponent,
   },
   {
@@ -29,7 +29,7 @@ const routes: Routes = [
     component: EmptyRouteComponent,
   },
   // {
-  //   path: 'settings/95501678-6687-4fb3-92ab-1155f47f839e/themes',
+  //   path: 'settings/04de9428-8658-4bf7-8171-b59f6327bbf1/themes',
   //   loadChildren: () => import('./plugin/plugin.module').then(m => m.PluginModule)
   // },
   // {

@@ -1006,12 +1006,13 @@ export async function upsert_to_dynamo(client: Client, request: Request) {
 
     const service = new MyService(client);
     const hedears = {};
-    // hedears["X-Pepperi-SecretKey"] = client.EncryptedAddonUUID;
-    // service.papiClient.post(
-    //     `/addons/data/${client.AddonUUID}/${table}`,
-    //     body,
-    //     hedears
-    // );
+    hedears["X-Pepperi-SecretKey"] = client.EncryptedAddonUUID;
+    const result = await service.papiClient.post(
+        `/addons/data/${client.AddonUUID}/${table}`,
+        body,
+        hedears
+    );
+    return result;
 }
 
 export async function get_from_dynamo(client: Client, request: Request) {
@@ -1022,7 +1023,7 @@ export async function get_from_dynamo(client: Client, request: Request) {
 
     const service = new MyService(client);
     const hedears = {};
-    //hedears["X-Pepperi-SecretKey"] = client.EncryptedAddonUUID;
+    hedears["X-Pepperi-SecretKey"] = client.EncryptedAddonUUID;
     const result = await service.papiClient.get(
         `/addons/data/${client.AddonUUID}/${table}/${key}`
     );

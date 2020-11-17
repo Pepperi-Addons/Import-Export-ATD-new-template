@@ -111,6 +111,9 @@ export class ImportAtdComponent implements OnInit {
           let destinitionRef = {} as Reference;
           destinitionRef.ID = res.InternalID.toString();
           destinitionRef.Name = res.FileName;
+          destinitionRef.Type = ReferenceType.toString(
+            ReferenceType.FileStorage
+          );
           this.referenceMap.Mapping[
             referenceIndex
           ].Destination = destinitionRef;
@@ -120,14 +123,12 @@ export class ImportAtdComponent implements OnInit {
           let transactionItemScope = await this.getTransactionItemScope(
             this.selectedActivity
           );
-          if (
-            transactionItemScope === null ||
-            transactionItemScope.length === 0
-          ) {
+          if (!transactionItemScope) {
             let res = await this.upsertTransactionItemScope(referenceIndex);
             let destinitionRef = {} as Reference;
             destinitionRef.ID = res.InternalID.toString();
             destinitionRef.Name = res.FileName;
+            destinitionRef.Type = ReferenceType.toString(ReferenceType.Filter);
             this.referenceMap.Mapping[
               referenceIndex
             ].Destination = destinitionRef;
@@ -140,6 +141,10 @@ export class ImportAtdComponent implements OnInit {
           let destinitionRef = {} as Reference;
           destinitionRef.ID = res.InternalID.toString();
           destinitionRef.Name = res.TableID;
+          destinitionRef.Type = ReferenceType.toString(
+            ReferenceType.UserDefinedTable
+          );
+
           this.referenceMap.Mapping[
             referenceIndex
           ].Destination = destinitionRef;
@@ -183,11 +188,11 @@ export class ImportAtdComponent implements OnInit {
     this.importedService.callToServerAPI(
       "upsert_to_dynamo",
       "POST",
+      { table: `importExportATD` },
       {
         Key: "resolution",
         Value: resulotion,
-      },
-      { table: `importExportATD` }
+      }
     );
 
     if (this.webhooks.length > 0) {
@@ -199,13 +204,15 @@ export class ImportAtdComponent implements OnInit {
   }
 
   private showWebhooks() {
-    this.showConflictResolution = false;
-    this.showWebhooksResolution = true;
-    setTimeout(() => {
-      window.dispatchEvent(new Event("resize"));
-    }, 5);
+    this.fillWebhooksFromDynamo().then(() => {
+      this.showConflictResolution = false;
+      this.showWebhooksResolution = true;
+      setTimeout(() => {
+        window.dispatchEvent(new Event("resize"));
+      }, 5);
 
-    this.loadWebhookslist();
+      this.loadWebhookslist();
+    });
   }
 
   private async upsertUDT(referenceIndex: number) {
@@ -279,8 +286,9 @@ export class ImportAtdComponent implements OnInit {
   }
 
   async onOkWebhooksClicked() {
+    debugger;
     let dynamoWebhooks = {};
-    this.webhooks.forEach(async (webhook) => {
+    this.webhooks.forEach((webhook) => {
       let referenceIndex = this.referenceMap.Mapping.findIndex(
         (pair) => pair.Origin.UUID === webhook.UUID
       );
@@ -309,11 +317,11 @@ export class ImportAtdComponent implements OnInit {
     this.importedService.callToServerAPI(
       "upsert_to_dynamo",
       "POST",
+      { table: `importExportATD` },
       {
         Key: "webhooks",
         Value: dynamoWebhooks,
-      },
-      { table: `importExportATD` }
+      }
     );
     this.callToImportATD();
   }
@@ -368,6 +376,7 @@ export class ImportAtdComponent implements OnInit {
     this.referenceMap.Mapping.forEach((pair) => {
       // The content of the webhook reference should be sent in order to fix the workflow's actions
       if (
+        pair.Destination &&
         pair.Destination.Type !== ReferenceType.toString(ReferenceType.Webhook)
       ) {
         delete pair.Destination.Content;
@@ -376,6 +385,7 @@ export class ImportAtdComponent implements OnInit {
     });
     this.referenceMap.Mapping.forEach((pair) => {
       if (
+        pair.Destination &&
         pair.Destination.Type !== ReferenceType.toString(ReferenceType.Webhook)
       ) {
         delete pair.Destination.Path;
@@ -455,30 +465,33 @@ export class ImportAtdComponent implements OnInit {
     } catch {}
   }
 
-  private async fillResolutionFromDynamo() {
-    let resolutionFromDynmo = await this.importedService.callToServerAPI(
-      "get_from_dynamo",
-      "GET",
-      { table: `importExportATD`, key: `resolution` }
-    );
+  private async fillWebhooksFromDynamo() {
     let webhooksFromDynmo = await this.importedService.callToServerAPI(
       "get_from_dynamo",
       "GET",
       { table: `importExportATD`, key: `webhooks` }
     );
 
+    this.webhooks.forEach((w) => {
+      const val = webhooksFromDynmo[0].Value[w.UUID];
+      if (val != null && val != undefined && val != {}) {
+        w.Url = val.url ? val.url : w.Url;
+        w.SecretKey = val.secretKey ? val.secretKey : w.SecretKey;
+      }
+    });
+  }
+
+  private async fillResolutionFromDynamo() {
+    let resolutionFromDynmo = await this.importedService.callToServerAPI(
+      "get_from_dynamo",
+      "GET",
+      { table: `importExportATD`, key: `resolution` }
+    );
+
     this.conflictsList.forEach((c) => {
       const val = resolutionFromDynmo[0].Value[c.ID];
       if (val != null && val != undefined) {
         c.Resolution = ResolutionOption.toString(val);
-      }
-    });
-
-    this.webhooks.forEach((w) => {
-      const val = webhooksFromDynmo[0].Value[w.UUID];
-      if (val != null && val != undefined && val != {}) {
-        w.Url = val.url;
-        w.SecretKey = val.secretKey;
       }
     });
   }
@@ -526,7 +539,7 @@ export class ImportAtdComponent implements OnInit {
         ) {
           const conflict: Conflict = {
             Name: ref.Name,
-            Object: ReferenceType.toString(referencedPair.Origin.Type),
+            Object: referencedPair.Origin.Type,
             Status: `Object not found`,
             Resolution: ResolutionOption.toString(ResolutionOption.CreateNew),
             UUID: Guid.newGuid(),
@@ -536,9 +549,7 @@ export class ImportAtdComponent implements OnInit {
           conflicts.push(conflict);
         } else {
           const title = `error`;
-          const content = `No reference was found with the name: ${
-            ref.Name
-          } of type: ${ReferenceType.toString(ref.Type)}`;
+          const content = `No reference was found with the name: ${ref.Name} of type: ${ref.Type}`;
           this.showWebhooksResolution = false;
           this.showConflictResolution = false;
           this.importedService.openDialog(title, content);
@@ -653,9 +664,9 @@ export class ImportAtdComponent implements OnInit {
       this.conflictsList[objectOndex].Resolution = event.Value;
     } else if (this.showWebhooksResolution) {
       let objectOndex = this.webhooks.findIndex((x) => x.UUID === event.Id);
-      if (event.ApiName === "SecretKey") {
+      if (event.ApiName === "Secret Key") {
         this.webhooks[objectOndex].SecretKey = event.Value;
-      } else if (event.ApiName === "Url") {
+      } else if (event.ApiName === "Web service URL") {
         this.webhooks[objectOndex].Url = event.Value;
       }
     }

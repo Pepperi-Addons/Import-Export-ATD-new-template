@@ -10,6 +10,7 @@ import {
   PepNgxLibModule,
   AddonService,
   CustomizationService,
+  FileService,
 } from "@pepperi-addons/ngx-lib";
 import { PepAttachmentModule } from "@pepperi-addons/ngx-lib/attachment";
 import { PepCheckboxModule } from "@pepperi-addons/ngx-lib/checkbox";
@@ -38,9 +39,19 @@ import {
   TranslateService,
 } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { MultiTranslateHttpLoader } from "ngx-translate-multi-http-loader";
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, "/assets/i18n/", ".json");
+export function createTranslateLoader(
+  http: HttpClient,
+  fileService: FileService
+) {
+  const translationsPrefix: string = fileService.getAssetsTranslationsPath();
+  const translationsSuffix: string = fileService.getAssetsTranslationsSuffix();
+
+  return new MultiTranslateHttpLoader(http, [
+    { prefix: "/assets/i18n/", suffix: translationsSuffix },
+    { prefix: "/assets/i18n/", suffix: ".json" },
+  ]);
 }
 
 const pepperiComponentsModules = [
@@ -77,7 +88,7 @@ const pepperiComponentsModules = [
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient],
+        deps: [HttpClient, FileService],
       },
     }),
   ],

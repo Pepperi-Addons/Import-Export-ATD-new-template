@@ -28,7 +28,6 @@ import {
 
 import { ExportAtdService } from "./export-atd.service";
 
-
 @Component({
   selector: "export-atd",
   templateUrl: "./export-atd.component.html",
@@ -89,7 +88,8 @@ export class ExportAtdComponent implements OnInit {
             this.data = res.URL;
             this.exportatdService.openDialog(
               "Export ATD",
-              "Export completed successfully"
+              "Export completed successfully",
+              () => this.downloadUrl()
             );
           });
       });
@@ -107,7 +107,11 @@ export class ExportAtdComponent implements OnInit {
         var filetype = "text/plain";
 
         var a = document.createElement("a");
-        const dataURI = "data:" + filetype + ";base64," + btoa(fileContents);
+        const dataURI =
+          "data:" +
+          filetype +
+          ";base64," +
+          btoa(unescape(encodeURIComponent(fileContents)));
         a.href = dataURI;
         a["download"] = filename;
         var e = document.createEvent("MouseEvents");

@@ -63,7 +63,7 @@ export class ExportAtdService {
     return exportAtdResult;
   }
 
-  openDialog(title: string, content: string) {
-    this.appService.openDialog(title, content);
+  openDialog(title: string, content: string, callback: any) {
+    this.appService.openDialog(title, content, callback);
   }
 }
